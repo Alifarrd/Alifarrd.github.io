@@ -11,7 +11,7 @@
       --sidebar: #1e293b;
       --card: #33415550;
       --accent: #3b82f6;
-      --accent-hover: #2563eb;
+      --accent-danger: #ef4444;
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
       --border: #334155;
@@ -48,10 +48,9 @@
     .sidebar-content { padding: 24px; flex-grow: 1; }
 
     h1 { margin: 0; font-size: 22px; font-weight: 800; color: var(--text-main); }
-    h2 { margin: 0 0 12px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); }
+    h2 { margin: 0 0 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); }
 
-    /* Search & Style Controls */
-    .control-group { margin-bottom: 20px; }
+    .control-group { margin-bottom: 24px; }
     .input-field {
       width: 100%;
       padding: 12px;
@@ -62,72 +61,55 @@
       font-size: 14px;
       margin-top: 5px;
     }
-    .input-field:focus { outline: none; border-color: var(--accent); }
 
-    /* Upload Zone */
+    /* Action Buttons */
+    .btn-block {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .btn-clear { background: rgba(239, 68, 68, 0.1); color: var(--accent-danger); border-color: rgba(239, 68, 68, 0.2); }
+    .btn-clear:hover { background: var(--accent-danger); color: white; }
+
+    /* Upload */
     .upload-zone {
       position: relative;
       border: 2px dashed var(--border);
       border-radius: 12px;
-      padding: 25px;
+      padding: 20px;
       text-align: center;
       background: var(--card);
       cursor: pointer;
-      margin-bottom: 20px;
     }
     .upload-zone:hover { border-color: var(--accent); background: rgba(59, 130, 246, 0.1); }
     #csvFile { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
 
-    /* Cards */
-    .data-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 16px;
-    }
-    .metric-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; }
-    .metric-val { font-family: monospace; color: var(--text-main); font-weight: 600; }
-
-    /* Legend */
-    .legend-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-    .legend-chip {
+    /* Legend & Checklist */
+    .legend-grid { display: grid; grid-template-columns: 1fr; gap: 4px; max-height: 200px; overflow-y: auto; padding-right: 5px; }
+    .legend-item {
       display: flex;
       align-items: center;
-      gap: 6px;
-      font-size: 11px;
-      background: rgba(255,255,255,0.05);
-      padding: 4px 6px;
-      border-radius: 4px;
+      gap: 10px;
+      font-size: 12px;
+      background: rgba(255,255,255,0.03);
+      padding: 6px 10px;
+      border-radius: 6px;
     }
-    .swatch { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+    .swatch { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
 
-    /* Map Area */
     #map { width: 100%; height: 100vh; background: #000; }
     
-    .profile-footer {
-      padding: 20px;
-      background: #161e2e;
-      border-top: 1px solid var(--border);
-      text-align: center;
-    }
-    .btn-row { display: flex; gap: 8px; justify-content: center; margin-top: 10px; }
-    .btn-sm {
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 12px;
-      text-decoration: none;
-      background: #1e293b;
-      border: 1px solid var(--border);
-      color: var(--text-main);
-    }
-    .btn-sm:hover { background: var(--accent); border-color: var(--accent); }
-
-    @media (max-width: 900px) {
-      .app-container { grid-template-columns: 1fr; }
-      .sidebar { height: auto; }
-      #map { height: 60vh; }
-    }
+    .profile-footer { padding: 20px; background: #161e2e; border-top: 1px solid var(--border); text-align: center; }
   </style>
 </head>
 <body>
@@ -142,45 +124,41 @@
     <div class="sidebar-content">
       <div class="control-group">
         <h2>Location Search</h2>
-        <input type="text" id="mapSearch" class="input-field" placeholder="Enter country or city...">
+        <input type="text" id="mapSearch" class="input-field" placeholder="Search country/city...">
       </div>
 
       <div class="control-group">
-        <h2>Visual Theme</h2>
+        <h2>Map Display Style</h2>
         <select id="mapStyle" class="input-field">
-          <option value="dark">Dark Professional (High Contrast)</option>
-          <option value="light">Standard Light (Detailed)</option>
+          <option value="dark">Dark Professional</option>
+          <option value="light">Standard Light</option>
           <option value="satellite">Satellite Imagery</option>
         </select>
       </div>
 
-      <div class="upload-zone">
-        <div style="font-size: 14px; font-weight: 600;">Upload CSV</div>
-        <div style="font-size: 11px; color: var(--text-muted);">lat, lon, koppen</div>
-        <input id="csvFile" type="file" accept=".csv" />
+      <div class="control-group">
+        <h2>Data Management</h2>
+        <div class="upload-zone" id="dropArea">
+          <div style="font-size: 13px; font-weight: 600;">Click to Upload CSV</div>
+          <input id="csvFile" type="file" accept=".csv" />
+        </div>
+        <button id="clearBtn" class="btn-block btn-clear">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          Clear Current Data
+        </button>
       </div>
 
-      <div class="data-card">
-        <h2>Dataset Stats</h2>
-        <div class="metric-row"><span>Points</span><span class="metric-val" id="count-p">0</span></div>
-        <div class="metric-row"><span>Classes</span><span class="metric-val" id="count-c">0</span></div>
-      </div>
-
-      <div class="data-card">
-        <h2>Legend</h2>
+      <div class="control-group">
+        <h2>Legend & Filtering</h2>
         <div id="legend" class="legend-grid">
-           <span style="font-size: 11px; color: var(--text-muted)">Awaiting file...</span>
+           <span style="font-size: 11px; color: var(--text-muted)">No data points active.</span>
         </div>
       </div>
     </div>
 
     <div class="profile-footer">
       <div style="font-weight: 700; font-size: 14px;">Ali Mozhdehi Fard</div>
-      <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">PhD Student • Nazarbayev University</div>
-      <div class="btn-row">
-        <a href="mailto:ali.mozhdehifard@gmail.com" class="btn-sm">Email</a>
-        <a href="https://github.com/alifarrd" target="_blank" class="btn-sm">GitHub</a>
-      </div>
+      <div style="font-size: 11px; color: var(--text-muted);">PhD Student • Nazarbayev University</div>
     </div>
   </aside>
 
@@ -189,7 +167,8 @@
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-  // 1. Setup Map & Layers
+  // Global Variables
+  let rawData = [];
   const map = L.map('map', { zoomControl: false }).setView([20, 0], 2);
   L.control.zoom({ position: 'topright' }).addTo(map);
 
@@ -202,7 +181,6 @@
 
   let layerGroup = L.layerGroup().addTo(map);
 
-  // 2. Köppen Color Engine
   const koppenColors = {
     "Af": "#0000ff", "Am": "#1565c0", "Aw": "#42a5f5", "BWh": "#ff0000",
     "BWk": "#ff8c00", "BSh": "#f4a460", "BSk": "#deb887", "Csa": "#ffff00",
@@ -214,80 +192,84 @@
     "ET": "#b0c4de", "EF": "#f5f5f5"
   };
 
-  // 3. UI Interactions
+  // Function to Clear Map & UI
+  function clearAllData() {
+    layerGroup.clearLayers();
+    rawData = [];
+    document.getElementById('csvFile').value = ""; // Reset input
+    document.getElementById('legend').innerHTML = '<span style="font-size: 11px; color: var(--text-muted)">Data cleared.</span>';
+    document.getElementById('status').textContent = "Map Reset Successfully";
+    document.getElementById('status').style.color = "var(--text-muted)";
+    map.flyTo([20, 0], 2);
+  }
+
+  document.getElementById('clearBtn').addEventListener('click', clearAllData);
+
+  // Map Style Toggle
   document.getElementById('mapStyle').addEventListener('change', (e) => {
     Object.values(tiles).forEach(t => map.removeLayer(t));
     tiles[e.target.value].addTo(map);
   });
 
+  // Search Toggle
   document.getElementById('mapSearch').addEventListener('keypress', async (e) => {
     if (e.key === 'Enter') {
-      const query = e.target.value;
-      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}`);
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${e.target.value}`);
       const data = await res.json();
-      if (data.length > 0) {
-        map.flyTo([data[0].lat, data[0].lon], 6);
-      }
+      if (data.length > 0) map.flyTo([data[0].lat, data[0].lon], 6);
     }
   });
 
-  // 4. Data Processing
+  // Handle CSV
   document.getElementById('csvFile').addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (!file) return;
     
     const reader = new FileReader();
     reader.onload = (event) => {
-      const text = event.target.result;
-      const rows = text.split('\n').filter(r => r.trim());
+      const rows = event.target.result.split('\n').filter(r => r.trim());
       const headers = rows[0].toLowerCase().split(',').map(h => h.trim());
       
-      const parsedData = rows.slice(1).map(line => {
+      rawData = rows.slice(1).map(line => {
         const vals = line.split(',');
         const obj = {};
         headers.forEach((h, i) => obj[h] = vals[i]?.trim());
-        return {
-          lat: parseFloat(obj.lat),
-          lon: parseFloat(obj.lon),
-          koppen: obj.koppen,
-          color: obj.color
-        };
+        return { lat: parseFloat(obj.lat), lon: parseFloat(obj.lon), koppen: obj.koppen };
       }).filter(d => !isNaN(d.lat) && !isNaN(d.lon));
 
-      renderPoints(parsedData);
+      renderMap();
     };
     reader.readAsText(file);
   });
 
-  function renderPoints(data) {
+  function renderMap() {
     layerGroup.clearLayers();
     const legend = document.getElementById('legend');
     legend.innerHTML = '';
     
-    const classes = [...new Set(data.map(d => d.koppen))].sort();
-    document.getElementById('count-p').textContent = data.length;
-    document.getElementById('count-c').textContent = classes.length;
-
+    const classes = [...new Set(rawData.map(d => d.koppen))].sort();
+    
     classes.forEach(cls => {
       const color = koppenColors[cls] || '#808080';
-      legend.innerHTML += `<div class="legend-chip"><span class="swatch" style="background:${color}"></span>${cls}</div>`;
+      legend.innerHTML += `
+        <div class="legend-item">
+          <span class="swatch" style="background:${color}"></span>
+          <span>${cls}</span>
+        </div>`;
     });
 
     const bounds = [];
-    data.forEach(d => {
-      const color = d.color || koppenColors[d.koppen] || '#ffffff';
+    rawData.forEach(d => {
+      const color = koppenColors[d.koppen] || '#ffffff';
       L.circleMarker([d.lat, d.lon], {
-        radius: 6,
-        fillColor: color,
-        color: "#ffffff",
-        weight: 1,
-        fillOpacity: 0.9
-      }).bindPopup(`<strong>${d.koppen}</strong><br>${d.lat}, ${d.lon}`).addTo(layerGroup);
+        radius: 6, fillColor: color, color: "#ffffff", weight: 1, fillOpacity: 0.9
+      }).bindPopup(`<b>${d.koppen}</b><br>${d.lat}, ${d.lon}`).addTo(layerGroup);
       bounds.push([d.lat, d.lon]);
     });
 
     if (bounds.length) map.fitBounds(bounds, { padding: [40, 40] });
-    document.getElementById('status').textContent = `Loaded ${data.length} points`;
+    document.getElementById('status').textContent = `Loaded ${rawData.length} points`;
+    document.getElementById('status').style.color = "#4ade80";
   }
 </script>
 </body>
