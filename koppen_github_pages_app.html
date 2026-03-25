@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Köppen Climate Classification Viewer</title>
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
+  <style>
+    :root {
+      --bg: #0b1220;
+      --panel: #121a2b;
+      --muted: #94a3b8;
+      --text: #e5eefc;
+      --accent: #60a5fa;
+      --border: #243047;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      padding: 20px;
+      background: var(--panel);
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+    }
+
+    .main {
+      position: relative;
+    }
+
+    #map {
+      width: 100%;
+      height: 100vh;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 24px;
+    }
+
+    h2 {
+      margin: 24px 0 10px;
+      font-size: 16px;
+    }
+
+    p, li {
+      color: var(--muted);
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+      margin-top: 14px;
+    }
+
+    .upload {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      border: 1px dashed var(--accent);
+      border-radius: 12px;
+      background: rgba(96,165,250,0.08);
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    input[type="file"] {
+      width: 100%;
+      margin-top: 10px;
+      color: var(--muted);
+    }
+
+    .legend-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text);
+      padding: 6px 8px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.02);
+    }
+
+    .swatch {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      border: 1px solid rgba(255,255,255,0.15);
+      flex: 0 0 16px;
+    }
+
+    .status {
+      margin-top: 12px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .metric {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      font-size: 14px;
+    }
+
+    .metric:last-child { border-bottom: none; }
+
+    .footer-note {
+      margin-top: 18px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .leaflet-popup-content {
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    @media (max-width: 900px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+      .sidebar {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+      #map {
+        height: 70vh;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <h1>Köppen Map Viewer</h1>
+      <p>
+        This GitHub Pages app displays the output of your Python Köppen classification workflow.
+        Export your <strong>koppen_summary.csv</strong> locally, then upload it here to visualize it.
+      </p>
+
+      <div class="card">
+        <label class="upload" for="csvFile">Upload koppen_summary.csv</label>
+        <input id="csvFile" type="file" accept=".csv" />
+        <div id="status" class="status">No file loaded.</div>
+      </div>
+
+      <div class="card">
+        <h2>Expected CSV columns</h2>
+        <p><code>lat</code>, <code>lon</code>, <code>koppen</code></p>
+        <p>
+          Optional column: <code>color</code>. If it is missing, the app assigns colors automatically.
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>Dataset summary</h2>
+        <div id="summary">
+          <div class="metric"><span>Points</span><strong>0</strong></div>
+          <div class="metric"><span>Classes</span><strong>0</strong></div>
+          <div class="metric"><span>Latitude range</span><strong>-</strong></div>
+          <div class="metric"><span>Longitude range</span><strong>-</strong></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Legend</h2>
+        <div id="legend" class="legend-grid"></div>
+      </div>
+
+      <div class="card">
+        <h2>How to publish on GitHub Pages</h2>
+        <ol>
+          <li>Create a repository, for example <code>koppen-app</code>.</li>
+          <li>Save this file as <code>index.html</code>.</li>
+          <li>Push it to the repository root.</li>
+          <li>In GitHub: <strong>Settings → Pages</strong>.</li>
+          <li>Set source to <strong>Deploy from a branch</strong>.</li>
+          <li>Select branch <strong>main</strong> and folder <strong>/root</strong>.</li>
+          <li>Your app will be published automatically.</li>
+        </ol>
+        <p class="footer-note">
+          If you want the app on your main site, place this file in a subfolder and link to it from your homepage.
+        </p>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div id="map"></div>
+    </main>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""></script>
+  <script>
+    const koppenColors = {
+      "Af": "#0000ff",
+      "Am": "#1565c0",
+      "Aw": "#42a5f5",
+      "BWh": "#ff0000",
+      "BWk": "#ff8c00",
+      "BSh": "#f4a460",
+      "BSk": "#deb887",
+      "Csa": "#ffff00",
+      "Csb": "#e6e600",
+      "Csc": "#cccc00",
+      "Cwa": "#90ee90",
+      "Cwb": "#66c266",
+      "Cwc": "#3d8b3d",
+      "Cfa": "#00ff00",
+      "Cfb": "#32cd32",
+      "Cfc": "#228b22",
+      "Dsa": "#ff00ff",
+      "Dsb": "#da70d6",
+      "Dsc": "#ba55d3",
+      "Dsd": "#9932cc",
+      "Dwa": "#a52a2a",
+      "Dwb": "#8b4513",
+      "Dwc": "#6b3e26",
+      "Dwd": "#4b2e1f",
+      "Dfa": "#00ffff",
+      "Dfb": "#00ced1",
+      "Dfc": "#4682b4",
+      "Dfd": "#1e3a5f",
+      "ET": "#b0c4de",
+      "EF": "#f5f5f5"
+    };
+
+    const map = L.map('map').setView([45, 65], 4);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 18,
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    let layerGroup = L.layerGroup().addTo(map);
+
+    function parseCSV(text) {
+      const lines = text.trim().split(/\r?\n/);
+      if (!lines.length) return [];
+
+      const headers = lines[0].split(',').map(h => h.trim());
+      return lines.slice(1).map(line => {
+        const values = line.split(',');
+        const row = {};
+        headers.forEach((header, i) => {
+          row[header] = (values[i] ?? '').trim();
+        });
+        return row;
+      });
+    }
+
+    function updateLegend(classes) {
+      const legend = document.getElementById('legend');
+      legend.innerHTML = '';
+
+      classes.forEach(cls => {
+        const item = document.createElement('div');
+        item.className = 'legend-item';
+        item.innerHTML = `
+          <span class="swatch" style="background:${koppenColors[cls] || '#808080'}"></span>
+          <span>${cls}</span>
+        `;
+        legend.appendChild(item);
+      });
+    }
+
+    function updateSummary(data) {
+      const lats = data.map(d => d.lat).filter(v => Number.isFinite(v));
+      const lons = data.map(d => d.lon).filter(v => Number.isFinite(v));
+      const classes = [...new Set(data.map(d => d.koppen).filter(Boolean))].sort();
+
+      document.getElementById('summary').innerHTML = `
+        <div class="metric"><span>Points</span><strong>${data.length}</strong></div>
+        <div class="metric"><span>Classes</span><strong>${classes.length}</strong></div>
+        <div class="metric"><span>Latitude range</span><strong>${lats.length ? `${Math.min(...lats).toFixed(3)} to ${Math.max(...lats).toFixed(3)}` : '-'}</strong></div>
+        <div class="metric"><span>Longitude range</span><strong>${lons.length ? `${Math.min(...lons).toFixed(3)} to ${Math.max(...lons).toFixed(3)}` : '-'}</strong></div>
+      `;
+
+      updateLegend(classes);
+    }
+
+    function renderData(data) {
+      layerGroup.clearLayers();
+
+      const bounds = [];
+      data.forEach(row => {
+        if (!Number.isFinite(row.lat) || !Number.isFinite(row.lon) || !row.koppen) return;
+
+        const color = row.color || koppenColors[row.koppen] || '#808080';
+
+        const marker = L.circleMarker([row.lat, row.lon], {
+          radius: 5,
+          fillColor: color,
+          color: color,
+          weight: 0.5,
+          opacity: 1,
+          fillOpacity: 0.9
+        }).bindPopup(`
+          <strong>Köppen class:</strong> ${row.koppen}<br>
+          <strong>Latitude:</strong> ${row.lat.toFixed(3)}<br>
+          <strong>Longitude:</strong> ${row.lon.toFixed(3)}
+        `);
+
+        marker.addTo(layerGroup);
+        bounds.push([row.lat, row.lon]);
+      });
+
+      if (bounds.length) {
+        map.fitBounds(bounds, { padding: [20, 20] });
+      }
+    }
+
+    document.getElementById('csvFile').addEventListener('change', event => {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = e => {
+        try {
+          const raw = parseCSV(e.target.result);
+          const data = raw.map(row => ({
+            lat: parseFloat(row.lat),
+            lon: parseFloat(row.lon),
+            koppen: row.koppen,
+            color: row.color || ''
+          })).filter(row => Number.isFinite(row.lat) && Number.isFinite(row.lon) && row.koppen);
+
+          if (!data.length) {
+            document.getElementById('status').textContent = 'File loaded, but no valid rows were found.';
+            return;
+          }
+
+          document.getElementById('status').textContent = `Loaded ${data.length} valid points from ${file.name}.`;
+          updateSummary(data);
+          renderData(data);
+        } catch (error) {
+          console.error(error);
+          document.getElementById('status').textContent = 'Could not read the CSV file.';
+        }
+      };
+
+      reader.readAsText(file);
+    });
+  </script>
+</body>
+</html>
