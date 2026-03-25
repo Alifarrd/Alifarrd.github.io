@@ -146,6 +146,44 @@
       line-height: 1.45;
     }
 
+    .map-legend {
+      background: rgba(18, 26, 43, 0.92);
+      color: var(--text);
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      max-width: 260px;
+      max-height: 60vh;
+      overflow-y: auto;
+    }
+
+    .map-legend h3 {
+      margin: 0 0 10px;
+      font-size: 14px;
+    }
+
+    .map-legend-items {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+
+    .map-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      line-height: 1.3;
+    }
+
+    .map-legend .swatch {
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+      flex: 0 0 14px;
+    }
+
     @media (max-width: 900px) {
       .app {
         grid-template-columns: 1fr;
@@ -196,7 +234,20 @@
       <div class="card">
         <h2>Legend</h2>
         <div id="legend" class="legend-grid"></div>
+        <p class="footer-note">The same legend is also shown on the map.</p>
       </div>
+
+      <div class="card">
+        <h2>How to publish on GitHub Pages</h2>
+        <ol>
+          <li>Create a repository, for example <code>koppen-app</code>.</li>
+          <li>Save this file as <code>index.html</code>.</li>
+          <li>Push it to the repository root.</li>
+          <li>In GitHub: <strong>Settings → Pages</strong>.</li>
+          <li>Set source to <strong>Deploy from a branch</strong>.</li>
+          <li>Select branch <strong>main</strong> and folder <strong>/root</strong>.</li>
+          <li>Your app will be published automatically.</li>
+        </ol>
         <p class="footer-note">
           If you want the app on your main site, place this file in a subfolder and link to it from your homepage.
         </p>
@@ -254,6 +305,19 @@
 
     let layerGroup = L.layerGroup().addTo(map);
 
+    const MapLegendControl = L.Control.extend({
+      options: { position: 'bottomright' },
+      onAdd: function () {
+        const div = L.DomUtil.create('div', 'map-legend');
+        div.innerHTML = '<h3>Köppen Legend</h3><div id="mapLegendItems" class="map-legend-items"><div style="color: var(--muted);">Load a CSV file</div></div>';
+        L.DomEvent.disableClickPropagation(div);
+        return div;
+      }
+    });
+
+    const mapLegendControl = new MapLegendControl();
+    map.addControl(mapLegendControl);
+
     function parseCSV(text) {
       const lines = text.trim().split(/\r?\n/);
       if (!lines.length) return [];
@@ -271,16 +335,30 @@
 
     function updateLegend(classes) {
       const legend = document.getElementById('legend');
+      const mapLegend = document.getElementById('mapLegendItems');
       legend.innerHTML = '';
+      if (mapLegend) mapLegend.innerHTML = '';
 
       classes.forEach(cls => {
+        const color = koppenColors[cls] || '#808080';
+
         const item = document.createElement('div');
         item.className = 'legend-item';
         item.innerHTML = `
-          <span class="swatch" style="background:${koppenColors[cls] || '#808080'}"></span>
+          <span class="swatch" style="background:${color}"></span>
           <span>${cls}</span>
         `;
         legend.appendChild(item);
+
+        if (mapLegend) {
+          const mapItem = document.createElement('div');
+          mapItem.className = 'map-legend-item';
+          mapItem.innerHTML = `
+            <span class="swatch" style="background:${color}"></span>
+            <span>${cls}</span>
+          `;
+          mapLegend.appendChild(mapItem);
+        }
       });
     }
 
