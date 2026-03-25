@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DL2XP7S9C1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);} 
+    gtag('js', new Date());
+    gtag('config', 'G-DL2XP7S9C1');
+  </script>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="author" content="Ali Mozhdehi Fard">
+  <meta name="description" content="Ali Mozhdehi Fard - PhD Researcher in Civil & Environmental Engineering focusing on climate change and machine learning.">
+  <meta name="theme-color" content="#0f172a">
+  <title>Ali Mozhdehi Fard | PhD Researcher</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="icon" href="images/AM.jpg">
+
+  <style>
+    :root {
+      --bg: #0b1120;
+      --panel: rgba(15, 23, 42, 0.7);
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --accent: #60a5fa; /* Blue */
+      --accent-2: #10b981; /* Green */
+      --line: rgba(255, 255, 255, 0.1);
+      --radius: 20px;
+    }
+
+    body {
+      background-color: var(--bg);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(96, 165, 250, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.1) 0px, transparent 50%);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* --- Navigation --- */
+    .navbar {
+      backdrop-filter: blur(12px);
+      background: rgba(11, 17, 32, 0.8);
+      border-bottom: 1px solid var(--line);
+      padding: 1rem 0;
+    }
+
+    .navbar-brand { font-weight: 800; color: var(--text) !important; }
+    .nav-link { 
+      color: var(--muted) !important; 
+      font-weight: 500; 
+      transition: color 0.3s;
+    }
+    .nav-link:hover { color: var(--accent) !important; }
+
+    /* --- Hero Section --- */
+    .hero { padding: 120px 0 60px; }
+    
+    .hero-card {
+      background: var(--panel);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--line);
+      border-radius: 32px;
+      padding: 3rem;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+
+    .eyebrow {
+      color: var(--accent);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-size: 0.75rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    h1 {
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      background: linear-gradient(to right, #fff, var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 1.5rem;
+    }
+
+    .profile-photo {
+      border-radius: var(--radius);
+      border: 4px solid var(--line);
+      transition: transform 0.4s ease;
+    }
+    .profile-photo:hover { transform: rotate(2deg) scale(1.02); }
+
+    /* --- Buttons --- */
+    .btn-custom {
+      padding: 0.75rem 1.5rem;
+      border-radius: 12px;
+      font-weight: 600;
+      transition: all 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-primary-custom {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+    }
+    .btn-primary-custom:hover {
+      background: #3b82f6;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(96, 165, 250, 0.3);
+    }
+
+    .btn-outline-custom {
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: rgba(255,255,255,0.05);
+    }
+    .btn-outline-custom:hover {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+    }
+
+    /* --- Stats & Panels --- */
+    .stat-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 1rem;
+      text-align: center;
+    }
+    .stat-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; }
+    .stat-value { font-weight: 700; font-size: 0.9rem; }
+
+    /* --- Project Cards --- */
+    .project-card {
+      height: 100%;
+      background: rgba(30, 41, 59, 0.5);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 2rem;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .project-card:hover {
+      transform: translateY(-10px);
+      border-color: var(--accent);
+      background: rgba(30, 41, 59, 0.8);
+    }
+
+    .badge-tech {
+      background: rgba(96, 165, 250, 0.1);
+      color: var(--accent);
+      border: 1px solid rgba(96, 165, 250, 0.2);
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      margin-right: 5px;
+      margin-top: 5px;
+      display: inline-block;
+    }
+
+    section { padding: 80px 0; }
+    .section-title { font-weight: 800; margin-bottom: 2rem; }
+
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 40px 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar navbar-expand-lg fixed-top navbar-dark">
+    <div class="container">
+      <a class="navbar-brand" href="#">ALI MOZHDEHI FARD</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="#projects">Projects</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Research</a></li>
+          <li class="nav-item ms-lg-3">
+            <a class="nav-link text-white" href="https://github.com/alifarrd"><i class="fa-brands fa-github fa-lg"></i></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="https://www.linkedin.com/in/ali-mozhdehi-fard-473475168/"><i class="fa-brands fa-linkedin fa-lg"></i></a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <div class="hero-card">
+          <div class="row align-items-center">
+            <div class="col-lg-7">
+              <span class="eyebrow">PhD Researcher • Environmental Engineering</span>
+              <h1>Bridging Hydrology, Climate Change & Machine Learning</h1>
+              <p class="lead text-secondary mb-4">
+                I develop computational workflows to solve complex environmental challenges. My research leverages <strong>CMIP6 scenarios</strong> and <strong>satellite observations</strong> to model drought risk and land-atmosphere interactions in data-scarce regions.
+              </p>
+              
+              <div class="d-flex flex-wrap gap-3 mb-5">
+                <a href="#projects" class="btn-custom btn-primary-custom">
+                  <i class="fa-solid fa-rocket"></i> View My Work
+                </a>
+                <a href="files/cv.pdf" class="btn-custom btn-outline-custom">
+                  <i class="fa-solid fa-file-pdf"></i> Download CV
+                </a>
+              </div>
+
+              <div class="row g-3">
+                <div class="col-6 col-md-3">
+                  <div class="stat-card">
+                    <div class="stat-label">Focus</div>
+                    <div class="stat-value">Climate Risk</div>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="stat-card">
+                    <div class="stat-label">Main Stack</div>
+                    <div class="stat-value">Python & ML</div>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="stat-card">
+                    <div class="stat-label">Region</div>
+                    <div class="stat-value">Central Asia</div>
+                  </div>
+                </div>
+                <div class="col-6 col-md-3">
+                  <div class="stat-card">
+                    <div class="stat-label">Status</div>
+                    <div class="stat-value">PhD Fellow</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-5 d-none d-lg-block text-center">
+              <img src="images/image-1.jpg" alt="Ali Mozhdehi Fard" class="img-fluid profile-photo" style="max-width: 320px;">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="container">
+      <div class="row g-5">
+        <div class="col-lg-6">
+          <h2 class="section-title">Research Direction</h2>
+          <p class="text-secondary">
+            My work focuses on identifying <strong>drought hotspots</strong> and evaluating environmental risk using interpretable machine learning. By integrating remote sensing indicators (like LAI dynamics) with multi-model climate ensembles, I generate data-driven insights for future climate impact assessments.
+          </p>
+          <div class="mt-4">
+            <h5 class="fw-bold mb-3">Core Expertise:</h5>
+            <div class="d-flex flex-wrap gap-2">
+              <span class="badge-tech">Hydrological Modeling</span>
+              <span class="badge-tech">Statistical Downscaling</span>
+              <span class="badge-tech">Remote Sensing</span>
+              <span class="badge-tech">Ensemble Evaluation</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="hero-card p-4">
+            <h4 class="fw-bold mb-4"><i class="fa-solid fa-code text-accent me-2"></i> Technical Stack</h4>
+            <div class="row">
+              <div class="col-6">
+                <ul class="list-unstyled text-secondary">
+                  <li><i class="fa-solid fa-check text-success me-2"></i> Python (Pandas/NumPy)</li>
+                  <li><i class="fa-solid fa-check text-success me-2"></i> ML (TensorFlow/Keras)</li>
+                  <li><i class="fa-solid fa-check text-success me-2"></i> Xarray & NetCDF</li>
+                </ul>
+              </div>
+              <div class="col-6">
+                <ul class="list-unstyled text-secondary">
+                  <li><i class="fa-solid fa-check text-success me-2"></i> MATLAB & Fortran</li>
+                  <li><i class="fa-solid fa-check text-success me-2"></i> Geospatial Analysis</li>
+                  <li><i class="fa-solid fa-check text-success me-2"></i> LaTeX / Git</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="projects" class="container">
+      <h2 class="section-title text-center">Featured Research Projects</h2>
+      <div class="row g-4 mt-2">
+        <div class="col-md-4">
+          <article class="project-card">
+            <div class="mb-3"><i class="fa-solid fa-earth-americas fa-2x text-primary"></i></div>
+            <h4 class="fw-bold">Köppen Climate Explorer</h4>
+            <p class="text-secondary small">Interactive browser-based visualization tool for global climate classification using Leaflet.js.</p>
+            <div class="mb-4">
+              <span class="badge-tech">Web GIS</span>
+              <span class="badge-tech">JavaScript</span>
+            </div>
+            <a href="#" class="btn btn-sm btn-primary-custom w-100">Launch App</a>
+          </article>
+        </div>
+        <div class="col-md-4">
+          <article class="project-card">
+            <div class="mb-3"><i class="fa-solid fa-microchip fa-2x text-success"></i></div>
+            <h4 class="fw-bold">LAI Prediction (LSTM)</h4>
+            <p class="text-secondary small">Deep learning sequence modeling to assess vegetation response to climate forcing scenarios.</p>
+            <div class="mb-4">
+              <span class="badge-tech">LSTM</span>
+              <span class="badge-tech">Deep Learning</span>
+            </div>
+          </article>
+        </div>
+        <div class="col-md-4">
+          <article class="project-card">
+            <div class="mb-3"><i class="fa-solid fa-chart-line fa-2x text-info"></i></div>
+            <h4 class="fw-bold">CMIP6 Bias Correction</h4>
+            <p class="text-secondary small">Comprehensive framework for evaluating multi-variable climate outputs against observations.</p>
+            <div class="mb-4">
+              <span class="badge-tech">Climate Modeling</span>
+              <span class="badge-tech">Python</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="text-center">
+    <div class="container">
+      <p>© 2026 Ali Mozhdehi Fard. Built for Research & Computational Science.</p>
+      <div class="d-flex justify-content-center gap-4 mt-3">
+        <a href="mailto:ali.mozhdehifard@gmail.com" class="text-secondary"><i class="fa-solid fa-envelope"></i></a>
+        <a href="#" class="text-secondary"><i class="fa-brands fa-google-scholar"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
