@@ -3,34 +3,66 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Köppen Research Suite | NASA POWER Data</title>
+  <title>Köppen Climate Analytics | Research Suite</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
     :root {
-      --bg: #0f172a; --sidebar: #1e293b; --card: #33415550;
-      --accent: #3b82f6; --danger: #ef4444; --text-main: #f8fafc;
-      --text-muted: #94a3b8; --border: #334155;
+      --bg: #0f172a;
+      --sidebar: #1e293b;
+      --card: #33415550;
+      --accent: #3b82f6;
+      --danger: #ef4444;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
     }
-    body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text-main); overflow: hidden; }
+
+    * { box-sizing: border-box; transition: all 0.15s ease; }
+
+    body { margin: 0; font-family: var(--font-sans); background: var(--bg); color: var(--text-main); overflow: hidden; }
+
     .app-container { display: grid; grid-template-columns: 380px 1fr; height: 100vh; }
+
+    /* Sidebar Controls */
     .sidebar { background: var(--sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; z-index: 1000; box-shadow: 10px 0 30px rgba(0,0,0,0.3); }
     .sidebar-header { padding: 24px; border-bottom: 1px solid var(--border); }
     .sidebar-content { padding: 24px; flex-grow: 1; overflow-y: auto; }
+
     h1 { margin: 0; font-size: 18px; font-weight: 800; }
     h2 { margin: 0 0 10px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); }
+
     .control-group { margin-bottom: 24px; }
     .input-field { width: 100%; padding: 10px; background: #0f172a; border: 1px solid var(--border); border-radius: 6px; color: white; font-size: 13px; }
+
+    /* Buttons */
     .btn-clear { width: 100%; padding: 10px; margin-top: 10px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
+    .btn-clear:hover { background: var(--danger); color: white; }
+
     .upload-zone { position: relative; border: 2px dashed var(--border); border-radius: 8px; padding: 15px; text-align: center; background: var(--card); cursor: pointer; }
+    .upload-zone:hover { border-color: var(--accent); }
     #csvFile { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+    /* Dynamic Legend with Stats */
     .legend-scroll { max-height: 300px; overflow-y: auto; background: rgba(0,0,0,0.2); border-radius: 8px; padding: 12px; border: 1px solid var(--border); }
     .filter-item { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
     .filter-row { display: flex; align-items: center; gap: 8px; font-size: 12px; }
-    .stat-bar-bg { width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; }
-    .stat-bar-fill { height: 100%; transition: width 0.6s ease; }
+    
+    /* Stats Bar UI */
+    .stat-bar-bg { width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-top: 4px; overflow: hidden; }
+    .stat-bar-fill { height: 100%; background: var(--accent); width: 0%; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+
+    /* Map Elements */
     #map { width: 100%; height: 100vh; background: #000; }
-    .coord-hud { position: absolute; bottom: 20px; right: 20px; z-index: 1001; background: rgba(15, 23, 42, 0.85); padding: 8px 14px; border-radius: 8px; border: 1px solid var(--border); font-family: monospace; font-size: 12px; color: var(--text-muted); pointer-events: none; }
-    .footer { padding: 20px; border-top: 1px solid var(--border); font-size: 11px; text-align: center; }
+    
+    .coord-hud {
+      position: absolute; bottom: 20px; right: 20px; z-index: 1001;
+      background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px);
+      padding: 8px 14px; border-radius: 8px; border: 1px solid var(--border);
+      font-family: monospace; font-size: 12px; pointer-events: none; color: var(--text-muted);
+    }
+
+    .footer { padding: 20px; border-top: 1px solid var(--border); font-size: 11px; text-align: center; color: var(--text-muted); }
   </style>
 </head>
 <body>
@@ -39,41 +71,49 @@
   <aside class="sidebar">
     <div class="sidebar-header">
       <h1>Köppen Research Tool</h1>
-      <div id="status" style="font-size: 10px; margin-top: 4px; color: var(--text-muted)">SYNC READY</div>
+      <div id="status" style="font-size: 10px; margin-top: 4px;">SYSTEM READY</div>
     </div>
+
     <div class="sidebar-content">
       <div class="control-group">
-        <h2>Region Search</h2>
-        <input type="text" id="mapSearch" class="input-field" placeholder="Search GPS or City...">
+        <h2>Global Search</h2>
+        <input type="text" id="mapSearch" class="input-field" placeholder="Search region...">
       </div>
+
       <div class="control-group">
         <h2>Map Layer</h2>
         <select id="mapStyle" class="input-field">
-          <option value="dark">Dark (Best for Boundaries)</option>
+          <option value="dark">Dark Professional (Boundaries)</option>
           <option value="light">Detailed Light</option>
-          <option value="satellite">Satellite Imagery</option>
+          <option value="satellite">Satellite View</option>
         </select>
       </div>
+
       <div class="control-group">
-        <h2>Data Import</h2>
+        <h2>Data Management</h2>
         <div class="upload-zone">
-          <div style="font-size: 12px; font-weight: 600;">Upload koppen_summary.csv</div>
+          <div style="font-size: 12px; font-weight: 600;">Upload csv_summary</div>
           <input id="csvFile" type="file" accept=".csv" />
         </div>
-        <button id="clearBtn" class="btn-clear">Reset Map</button>
+        <button id="clearBtn" class="btn-clear">Reset Analysis</button>
       </div>
+
       <div class="control-group">
-        <h2>Class Distribution</h2>
+        <h2>Class Distribution (%)</h2>
         <div id="legend" class="legend-scroll">
-           <span style="font-size: 11px; color: var(--text-muted);">Awaiting Python output...</span>
+           <span style="font-size: 11px; color: var(--text-muted);">Awaiting data...</span>
         </div>
       </div>
     </div>
-    <div class="footer"><strong>Ali Mozhdehi Fard</strong><br>PhD Student • Nazarbayev University</div>
+
+    <div class="footer">
+      <strong>Ali Mozhdehi Fard</strong><br>PhD Candidate • Nazarbayev University
+    </div>
   </aside>
+
   <main>
     <div id="map"></div>
-    <div class="coord-hud" id="coordHud">LAT: 0.00 | LON: 0.00</div>
+    <div class="coord-hud" id="coordHud">Lat: 0.0000 | Lon: 0.0000</div>
   </main>
 </div>
 
@@ -81,96 +121,131 @@
 <script>
   let rawData = [];
   let activeFilters = new Set();
-  const map = L.map('map', { zoomControl: false, minZoom: 2 }).setView([48, 71], 4); // Defaulted toward Kazakhstan region
-  
-  // Track Mouse
-  map.on('mousemove', e => { 
-    document.getElementById('coordHud').innerHTML = `LAT: ${e.latlng.lat.toFixed(3)} | LON: ${e.latlng.lng.toFixed(3)}`; 
+  const hud = document.getElementById('coordHud');
+
+  // Initialize Map
+  const map = L.map('map', { zoomControl: false, minZoom: 2 }).setView([20, 0], 2);
+  L.control.zoom({ position: 'topright' }).addTo(map);
+
+  // Coordinate Tracker Logic
+  map.on('mousemove', (e) => {
+    hud.innerHTML = `LAT: ${e.latlng.lat.toFixed(4)} | LON: ${e.latlng.lng.toFixed(4)}`;
   });
 
   const tiles = {
-    dark: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'),
-    light: L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png'),
-    satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}')
+    dark: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: 'CARTO' }),
+    light: L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { attribution: 'OSM' }),
+    satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: 'ESRI' })
   };
   tiles.dark.addTo(map);
-  L.control.zoom({ position: 'topright' }).addTo(map);
 
   let layerGroup = L.layerGroup().addTo(map);
 
-  // CSV Processing
+  const koppenColors = {
+    "Af": "#0000ff", "Am": "#1565c0", "Aw": "#42a5f5", "BWh": "#ff0000",
+    "BWk": "#ff8c00", "BSh": "#f4a460", "BSk": "#deb887", "Csa": "#ffff00",
+    "Csb": "#e6e600", "Csc": "#cccc00", "Cwa": "#90ee90", "Cwb": "#66c266",
+    "Cwc": "#3d8b3d", "Cfa": "#00ff00", "Cfb": "#32cd32", "Cfc": "#228b22",
+    "Dsa": "#ff00ff", "Dsb": "#da70d6", "Dsc": "#ba55d3", "Dsd": "#9932cc",
+    "Dwa": "#a52a2a", "Dwb": "#8b4513", "Dwc": "#6b3e26", "Dwd": "#4b2e1f",
+    "Dfa": "#00ffff", "Dfb": "#00ced1", "Dfc": "#4682b4", "Dfd": "#1e3a5f",
+    "ET": "#b0c4de", "EF": "#f5f5f5"
+  };
+
+  // UI Handlers
+  document.getElementById('clearBtn').addEventListener('click', () => {
+    layerGroup.clearLayers();
+    rawData = [];
+    activeFilters.clear();
+    document.getElementById('csvFile').value = "";
+    document.getElementById('legend').innerHTML = '<span style="font-size: 11px; color: var(--text-muted);">Reset completed.</span>';
+    document.getElementById('status').textContent = "MAP RESET";
+    map.flyTo([20, 0], 2);
+  });
+
+  document.getElementById('mapStyle').addEventListener('change', (e) => {
+    Object.values(tiles).forEach(t => map.removeLayer(t));
+    tiles[e.target.value].addTo(map);
+  });
+
+  document.getElementById('mapSearch').addEventListener('keypress', async (e) => {
+    if (e.key === 'Enter') {
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(e.target.value)}`);
+      const data = await res.json();
+      if (data.length > 0) map.flyTo([data[0].lat, data[0].lon], 7);
+    }
+  });
+
+  // Data Logic
   document.getElementById('csvFile').addEventListener('change', (e) => {
     const file = e.target.files[0];
+    if (!file) return;
     const reader = new FileReader();
-    reader.onload = (evt) => {
-      const rows = evt.target.result.split('\n').filter(r => r.trim());
-      const headers = rows[0].toLowerCase().split(',').map(h => h.trim());
-      
-      rawData = rows.slice(1).map(line => {
-        const vals = line.split(',');
-        const obj = {};
-        headers.forEach((h, i) => obj[h] = vals[i]?.trim());
-        return { 
-          lat: parseFloat(obj.lat), 
-          lon: parseFloat(obj.lon), 
-          koppen: obj.koppen, 
-          color: obj.color // Dynamically pull color from your Python script
-        };
-      }).filter(d => !isNaN(d.lat));
+    reader.onload = (event) => {
+        const rows = event.target.result.split('\n').filter(r => r.trim());
+        const headers = rows[0].toLowerCase().split(',').map(h => h.trim());
+        rawData = rows.slice(1).map(line => {
+          const vals = line.split(',');
+          const obj = {};
+          headers.forEach((h, i) => obj[h] = vals[i]?.trim());
+          return { lat: parseFloat(obj.lat), lon: parseFloat(obj.lon), koppen: obj.koppen };
+        }).filter(d => !isNaN(d.lat) && !isNaN(d.lon));
 
-      activeFilters = new Set([...new Set(rawData.map(d => d.koppen))]);
-      updateUI();
-      renderPoints();
+        activeFilters = new Set([...new Set(rawData.map(d => d.koppen))]);
+        updateAnalytics();
+        renderMap();
     };
     reader.readAsText(file);
   });
 
-  function updateUI() {
+  function updateAnalytics() {
     const legend = document.getElementById('legend');
     legend.innerHTML = '';
+    const total = rawData.length;
     const counts = {};
-    rawData.forEach(d => counts[d.koppen] = (counts[d.koppen] || 0) + 1);
     
-    Object.keys(counts).sort().forEach(cls => {
-      const pct = ((counts[cls] / rawData.length) * 100).toFixed(1);
-      const rowColor = rawData.find(d => d.koppen === cls).color || '#888';
-      const div = document.createElement('div');
-      div.className = 'filter-item';
-      div.innerHTML = `
+    rawData.forEach(d => counts[d.koppen] = (counts[d.koppen] || 0) + 1);
+    const sortedClasses = Object.keys(counts).sort();
+
+    sortedClasses.forEach(cls => {
+      const pct = ((counts[cls] / total) * 100).toFixed(1);
+      const color = koppenColors[cls] || '#808080';
+      
+      const item = document.createElement('div');
+      item.className = 'filter-item';
+      item.innerHTML = `
         <div class="filter-row">
           <input type="checkbox" checked data-cls="${cls}">
-          <span class="stat-bar-fill" style="width:12px; height:12px; background:${rowColor}; border-radius:2px"></span>
-          <span style="flex-grow:1">${cls}</span>
-          <span style="font-size:10px">${pct}%</span>
+          <span class="swatch" style="background:${color}"></span>
+          <span style="flex-grow: 1">${cls}</span>
+          <span style="font-family: monospace; font-size: 10px;">${pct}%</span>
         </div>
-        <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:${pct}%; background:${rowColor}"></div></div>
+        <div class="stat-bar-bg"><div class="stat-bar-fill" style="width: ${pct}%; background:${color}"></div></div>
       `;
-      div.querySelector('input').onchange = (e) => {
-        e.target.checked ? activeFilters.add(cls) : activeFilters.delete(cls);
-        renderPoints();
-      };
-      legend.appendChild(div);
+      
+      item.querySelector('input').addEventListener('change', (e) => {
+        if (e.target.checked) activeFilters.add(cls);
+        else activeFilters.delete(cls);
+        renderMap();
+      });
+      legend.appendChild(item);
     });
   }
 
-  function renderPoints() {
+  function renderMap() {
     layerGroup.clearLayers();
     const bounds = [];
     rawData.forEach(d => {
       if (!activeFilters.has(d.koppen)) return;
+      const color = koppenColors[d.koppen] || '#ffffff';
       L.circleMarker([d.lat, d.lon], {
-        radius: 5, fillColor: d.color, color: "#fff", weight: 0.5, fillOpacity: 0.9
-      }).bindPopup(`<b>${d.koppen}</b><br>${d.lat}, ${d.lon}`).addTo(layerGroup);
+        radius: 6, fillColor: color, color: "#ffffff", weight: 1, fillOpacity: 0.9
+      }).bindPopup(`<strong>${d.koppen}</strong><br>LAT: ${d.lat}<br>LON: ${d.lon}`).addTo(layerGroup);
       bounds.push([d.lat, d.lon]);
     });
-    if (bounds.length) map.fitBounds(bounds);
+    if (bounds.length) map.fitBounds(bounds, { padding: [40, 40] });
+    document.getElementById('status').textContent = `ACTIVE POINTS: ${bounds.length}`;
   }
-
-  document.getElementById('clearBtn').onclick = () => location.reload();
-  document.getElementById('mapStyle').onchange = (e) => {
-    Object.values(tiles).forEach(t => map.removeLayer(t));
-    tiles[e.target.value].addTo(map);
-  };
 </script>
 </body>
 </html>
