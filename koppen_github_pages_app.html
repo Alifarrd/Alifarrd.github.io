@@ -132,10 +132,21 @@
     hud.innerHTML = `LAT: ${e.latlng.lat.toFixed(4)} | LON: ${e.latlng.lng.toFixed(4)}`;
   });
 
+  const CARTO_KEY = 'cb1_3vc3_1_34d5ea1f86789e909f8cdd06';
+
   const tiles = {
-    dark: L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { attribution: 'CARTO' }),
-    light: L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { attribution: 'OSM' }),
-    satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: 'ESRI' })
+    dark: L.tileLayer(
+      `https://basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png?key=${CARTO_KEY}`,
+      { attribution: '&copy; OpenStreetMap contributors &copy; CARTO', maxZoom: 20 }
+    ),
+    light: L.tileLayer(
+      `https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=${CARTO_KEY}`,
+      { attribution: '&copy; OpenStreetMap contributors &copy; CARTO', maxZoom: 20 }
+    ),
+    satellite: L.tileLayer(
+      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+      { attribution: 'Tiles &copy; Esri' }
+    )
   };
   tiles.dark.addTo(map);
 
